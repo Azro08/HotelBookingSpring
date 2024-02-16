@@ -35,6 +35,7 @@ public class FavoriteHotelsController {
 
         favoriteHotelsRepository.save(favoriteHotel);
 
+
         return new ResponseEntity<>("Hotel saved", HttpStatus.OK);
     }
 
