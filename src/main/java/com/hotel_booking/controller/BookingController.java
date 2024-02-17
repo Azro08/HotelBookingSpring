@@ -6,10 +6,10 @@ import com.hotel_booking.repository.BookingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/booking")
@@ -19,7 +19,7 @@ public class BookingController {
     BookingRepository bookingRepository;
 
     @PostMapping("/book_hotel")
-    public ResponseEntity<String> bookHotel(@RequestBody BookingDetailsDto bookingDetailsDto){
+    public ResponseEntity<String> bookHotel(@RequestBody BookingDetailsDto bookingDetailsDto) {
 
         BookingDetails bookingDetails = new BookingDetails();
 
@@ -42,6 +42,24 @@ public class BookingController {
 
         return new ResponseEntity<>("Hotel booked", HttpStatus.OK);
 
+    }
+
+    @GetMapping("/get_booked_hotels")
+    public ResponseEntity<List<BookingDetails>> getBookedHotels(@RequestParam("userId") String userId) {
+        List<BookingDetails> bookedHotels = bookingRepository.findByUserId(userId);
+        if (bookedHotels.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // or any other appropriate response
+        }
+        return new ResponseEntity<>(bookedHotels, HttpStatus.OK);
+    }
+
+    @GetMapping("/get_booking_details")
+    public ResponseEntity<BookingDetails> getBookingDetails(@RequestParam("bookingId") Long bookingId) {
+        Optional<BookingDetails> bookingDetailsOptional = bookingRepository.findById(bookingId);
+        if (bookingDetailsOptional.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // or any other appropriate response
+        }
+        return new ResponseEntity<>(bookingDetailsOptional.get(), HttpStatus.OK);
     }
 
 }

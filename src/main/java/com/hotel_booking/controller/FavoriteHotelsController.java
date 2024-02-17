@@ -6,10 +6,9 @@ import com.hotel_booking.repository.FavoriteHotelsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/favorites")
@@ -37,6 +36,15 @@ public class FavoriteHotelsController {
 
 
         return new ResponseEntity<>("Hotel saved", HttpStatus.OK);
+    }
+
+    @GetMapping("/get_saved_hotels")
+    public ResponseEntity<List<FavoriteHotels>> getSavedHotels(@RequestParam("userId") String userId) {
+        List<FavoriteHotels> savedHotels = favoriteHotelsRepository.findByUserId(userId);
+        if (savedHotels.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // or any other appropriate response
+        }
+        return new ResponseEntity<>(savedHotels, HttpStatus.OK);
     }
 
 }
