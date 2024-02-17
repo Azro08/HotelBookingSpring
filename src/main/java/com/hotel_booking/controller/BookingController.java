@@ -62,4 +62,29 @@ public class BookingController {
         return new ResponseEntity<>(bookingDetailsOptional.get(), HttpStatus.OK);
     }
 
+    @PostMapping("/cancel_booking")
+    public ResponseEntity<String> cancelBooking(@RequestParam("bookingId") Long bookingId) {
+        Optional<BookingDetails> bookingDetailsOptional = bookingRepository.findById(bookingId);
+        if (bookingDetailsOptional.isEmpty()) {
+            return new ResponseEntity<>("Booking not found", HttpStatus.NOT_FOUND);
+        }
+
+        bookingRepository.delete(bookingDetailsOptional.get());
+        return new ResponseEntity<>("Booking canceled", HttpStatus.OK);
+    }
+
+    @PostMapping("/approve_booking")
+    public ResponseEntity<String> approveBooking(@RequestParam("bookingId") Long bookingId, @RequestParam("isApproved") boolean isApproved) {
+        Optional<BookingDetails> bookingDetailsOptional = bookingRepository.findById(bookingId);
+        if (bookingDetailsOptional.isEmpty()) {
+            return new ResponseEntity<>("Booking not found", HttpStatus.NOT_FOUND);
+        }
+
+        BookingDetails bookingDetails = bookingDetailsOptional.get();
+        bookingDetails.setApproved(isApproved);
+        bookingRepository.save(bookingDetails);
+
+        return new ResponseEntity<>("Booking " + (isApproved ? "approved" : "unapproved"), HttpStatus.OK);
+    }
+
 }

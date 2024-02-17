@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/favorites")
@@ -45,6 +46,17 @@ public class FavoriteHotelsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND); // or any other appropriate response
         }
         return new ResponseEntity<>(savedHotels, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/remove_saved_hotel/{hotelId}")
+    public ResponseEntity<String> removeSavedHotel(@PathVariable Long hotelId) {
+        Optional<FavoriteHotels> optionalFavoriteHotel = favoriteHotelsRepository.findById(hotelId);
+        if (optionalFavoriteHotel.isEmpty()) {
+            return new ResponseEntity<>("Hotel not found", HttpStatus.NOT_FOUND);
+        }
+
+        favoriteHotelsRepository.delete(optionalFavoriteHotel.get());
+        return new ResponseEntity<>("Hotel removed from saved list", HttpStatus.OK);
     }
 
 }
